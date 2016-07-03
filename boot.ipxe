@@ -1,0 +1,10 @@
+#!ipxe
+# Boots RangerOS in Ramdisk with persistent storage on disk /dev/vda
+ 
+# Location of Kernel/Initrd images
+#set base-url http://releases.rancher.com/os/latest
+set base-url http://containeros.huawei.com
+ 
+kernel ${base-url}/vmlinuz unicorn.state.formatzero=true unicorn.state.autoformat=[/dev/sda,/dev/vda] unicorn.cloud_init.datasources=[cmdline] cloud-config-url= ${base-url}/icloud-config.txt unicorn.password=unicorn
+initrd ${base-url}/initrd
+boot

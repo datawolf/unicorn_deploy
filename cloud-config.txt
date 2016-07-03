@@ -1,0 +1,31 @@
+#!/bin/bash
+set -ex
+
+trap "sudo reboot" EXIT
+
+cat > "cloud.yaml" << EOF
+#cloud-config
+ssh_authorized_keys:
+  - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCufCbIlJAWP2Mev8yT4uv8UYaJ9/Lv01Qa4TwR0QTYgqDYRzCYdY3KEw3PQG9Cb4wctYMbgYq/gy9FTUBrNv/pdIJeoOiogUvmu1vMR88I7iDnNbgcS11zTacFpTWySkqZ/cBX3HUtbaj7wxS9Gn2rLQRYe5SNOVguP+PCwSR9r62lpFYB4uIX+ewaWJVGvlAHISEsfi0LXoOIfXR9cVJ0ZkDDM84bbIT9xvml0zApYS3ONvF74c72NkcIU0duQpBlnk4axrx87kAxR/3XBENyh8PjQkzLU32xGbegF/mbT1p5BEjGTJlFw6s30XcX1SKNgJavFwl5JiWKxtrqRyfH datawolf@datawolf-Lenovo-G460
+write_files:
+  - path: /etc/rc.local
+    permissions: "0755"
+    owner: root
+    content: |
+      #!/bin/bash
+      echo "I'm doing things on start"
+hostname: huawei.com
+unicorn:
+  services:
+    nginxapp:
+      image: nginx
+      restart: always
+      labels:
+      - io.rancher.os.scope=system
+  console: euler
+EOF
+
+sudo touch log
+sudo openvt -s -- tail -f log &
+sudo ros install -d /dev/sda -f -c cloud.yaml > log 2>&1
+
